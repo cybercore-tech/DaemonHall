@@ -23,10 +23,9 @@ if [[ "${1:-}" == "--uninstall" ]]; then
 fi
 
 user_home="$(getent passwd "$SUDO_UID" | cut -d: -f6)"
-target_dir="$(sudo -u "#$SUDO_UID" env HOME="$user_home" CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-}" \
-  cargo metadata --format-version 1 --no-deps | python3 -c 'import sys,json;print(json.load(sys.stdin)["target_directory"])')"
-helper="$target_dir/release/daemonhall-unitctl"
-[[ -x "$helper" ]] || { echo "Build first: ./packaging/install.sh (as your user)." >&2; exit 1; }
+# Built and staged by ./packaging/install.sh (run as your user first).
+helper="$user_home/.local/share/daemonhall/daemonhall-unitctl"
+[[ -f "$helper" && ! -L "$helper" ]] || { echo "Run ./packaging/install.sh as your user first (it builds and stages the helper)." >&2; exit 1; }
 
 install -o root -g root -m 0755 "$helper" /usr/local/bin/daemonhall-unitctl
 install -o root -g root -m 0644 packaging/tech.cybercore.daemonhall.unitctl.policy \
