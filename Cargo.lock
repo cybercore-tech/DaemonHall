@@ -294,6 +294,8 @@ dependencies = [
 [[package]]
 name = "cybercore"
 version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "44d45acf886e3bf7ea23614d0f12ae6f23889cb5ac96c59376d1b3ef947e984e"
 dependencies = [
  "serde",
  "serde_json",
@@ -302,6 +304,7 @@ dependencies = [
 [[package]]
 name = "cyberwatch"
 version = "0.1.0"
+source = "git+https://github.com/cybercore-tech/cyberwatch?rev=ffd3b1bba4f378f4451035bcde23f6f851d64dd5#ffd3b1bba4f378f4451035bcde23f6f851d64dd5"
 dependencies = [
  "anyhow",
  "crossterm",

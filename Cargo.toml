@@ -21,8 +21,8 @@ dirs = "6"
 # Shared CYBERGRID palette + tokens (same bridge as cyberdeck-hub), and
 # cyberwatch's discovery/status logic so the TUI, bar widget and DaemonHall
 # agree on which units are yours. Path deps, like the rest of the family.
-cybercore = { path = "/home/raven/.sysops/cybercore" }
-cyberwatch = { path = "/home/raven/.sysops/cyberwatch" }
+cybercore = "0.5"
+cyberwatch = { git = "https://github.com/cybercore-tech/cyberwatch", rev = "ffd3b1bba4f378f4451035bcde23f6f851d64dd5" }
 
 [profile.release]
 strip = true
