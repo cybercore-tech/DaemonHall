@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 320" role="img" aria-labelledby="dt">
+  <title id="dt">The DaemonHall daemon: a little horned imp with a pitchfork and a jack-o-lantern bucket</title>
+  <defs>
+    <linearGradient id="d-skin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff3d8b"/><stop offset="1" stop-color="#b3155e"/>
+    </linearGradient>
+    <linearGradient id="d-horn" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#b57bff"/><stop offset="1" stop-color="#e8f7ff"/>
+    </linearGradient>
+    <linearGradient id="d-cape" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a0b3f"/><stop offset="1" stop-color="#12061d"/>
+    </linearGradient>
+    <linearGradient id="d-pump" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffab2e"/><stop offset="1" stop-color="#e2620a"/>
+    </linearGradient>
+    <radialGradient id="d-glow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#ffd166" stop-opacity=".95"/><stop offset="1" stop-color="#ff7b00" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="d-eyeglow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- ground shadow -->
+  <ellipse cx="128" cy="304" rx="78" ry="9" fill="#000" opacity=".35"/>
+
+  <!-- bat-wing cape -->
+  <path d="M86 150 C52 150 30 178 22 214 C34 206 44 208 50 218 C56 204 68 204 74 214 C80 200 92 198 98 206 Z" fill="url(#d-cape)" stroke="#5b1f80" stroke-width="2"/>
+  <path d="M170 150 C204 150 226 178 234 214 C222 206 212 208 206 218 C200 204 188 204 182 214 C176 200 164 198 158 206 Z" fill="url(#d-cape)" stroke="#5b1f80" stroke-width="2"/>
+
+  <!-- tail -->
+  <path d="M152 254 C196 276 240 266 244 236 C246 220 240 206 232 204" fill="none" stroke="#b3155e" stroke-width="7" stroke-linecap="round"/>
+  <path d="M220 196 L244 190 L238 214 Z" fill="#ff3d8b"/>
+
+  <!-- pitchfork (behind the arm) -->
+  <rect x="58" y="60" width="7" height="236" rx="3.5" fill="#6b7aa8"/>
+  <path d="M44 44 L44 72 C44 80 50 84 61.5 84 C73 84 79 80 79 72 L79 44 L73 44 L73 70 C73 74 70 76 66 76 L66 36 L57 36 L57 76 C53 76 50 74 50 70 L50 44 Z" fill="#9fb0d8"/>
+  <path d="M44 44 L47 32 L50 44 Z M57 36 L61.5 22 L66 36 Z M73 44 L76 32 L79 44 Z" fill="#c9d6f5"/>
+  <circle cx="61.5" cy="96" r="5" fill="#22e6ff"/>
+
+  <!-- body -->
+  <path d="M90 158 C90 140 108 132 128 132 C148 132 166 140 166 158 L170 236 C170 258 152 268 128 268 C104 268 86 258 86 236 Z" fill="url(#d-skin)"/>
+  <path d="M106 176 C106 166 116 160 128 160 C140 160 150 166 150 176 L152 226 C152 242 142 248 128 248 C114 248 104 242 104 226 Z" fill="#ff8fbf" opacity=".35"/>
+
+  <!-- legs + hooves -->
+  <path d="M104 258 L100 290 L120 290 L122 262 Z" fill="#b3155e"/>
+  <path d="M152 258 L156 290 L136 290 L134 262 Z" fill="#b3155e"/>
+  <path d="M96 288 L124 288 L124 298 C124 300 122 302 120 302 L100 302 C97 302 96 300 96 298 Z" fill="#1b1027"/>
+  <path d="M132 288 L160 288 L160 298 C160 300 159 302 156 302 L136 302 C134 302 132 300 132 298 Z" fill="#1b1027"/>
+  <path d="M110 288 L110 302 M146 288 L146 302" stroke="#3b2752" stroke-width="2"/>
+
+  <!-- left arm gripping the pitchfork -->
+  <path d="M94 168 C80 176 70 190 66 206" fill="none" stroke="#d01f6d" stroke-width="15" stroke-linecap="round"/>
+  <circle cx="64" cy="208" r="10" fill="#ff3d8b"/>
+  <path d="M55 203 L73 203 M55 210 L73 210" stroke="#b3155e" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- right arm holding the pumpkin bucket -->
+  <path d="M162 168 C178 180 188 196 190 214" fill="none" stroke="#d01f6d" stroke-width="15" stroke-linecap="round"/>
+  <path d="M176 222 C180 206 202 206 206 222" fill="none" stroke="#3b2752" stroke-width="3"/>
+  <circle cx="191" cy="212" r="9" fill="#ff3d8b"/>
+  <circle cx="191" cy="248" r="34" fill="url(#d-glow)"/>
+  <path d="M166 238 C166 222 178 218 191 218 C204 218 216 222 216 238 C216 258 204 268 191 268 C178 268 166 258 166 238 Z" fill="url(#d-pump)"/>
+  <path d="M182 220 C178 236 178 252 184 266 M200 220 C204 236 204 252 198 266" fill="none" stroke="#c4520a" stroke-width="2"/>
+  <path d="M189 218 C189 212 192 208 196 206" fill="none" stroke="#3f7d20" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M176 236 L184 230 L186 240 Z M206 236 L198 230 L196 240 Z" fill="#2a1100"/>
+  <path d="M176 250 L181 254 L185 250 L189 255 L193 250 L197 255 L201 250 L206 250 C202 260 180 260 176 250 Z" fill="#2a1100"/>
+  <path d="M178 251 L204 251 C200 257 182 257 178 251 Z" fill="#ffd166" opacity=".55"/>
+
+  <!-- horns -->
+  <path d="M96 76 C80 62 76 40 86 22 C90 40 100 52 114 60 Z" fill="url(#d-horn)"/>
+  <path d="M160 76 C176 62 180 40 170 22 C166 40 156 52 142 60 Z" fill="url(#d-horn)"/>
+
+  <!-- ears -->
+  <path d="M84 100 L62 86 L80 120 Z" fill="#d01f6d"/>
+  <path d="M172 100 L194 86 L176 120 Z" fill="#d01f6d"/>
+  <path d="M80 102 L70 96 L80 112 Z M176 102 L186 96 L176 112 Z" fill="#7d0c4e"/>
+
+  <!-- head -->
+  <path d="M128 52 C158 52 178 72 178 100 C178 130 156 150 128 150 C100 150 78 130 78 100 C78 72 98 52 128 52 Z" fill="url(#d-skin)"/>
+  <path d="M116 54 L128 72 L140 54 Z" fill="#7d0c4e" opacity=".6"/>
+
+  <!-- eyes -->
+  <g filter="url(#d-eyeglow)">
+    <ellipse cx="111" cy="98" rx="11" ry="12" fill="#c6ff45"/>
+    <ellipse cx="145" cy="98" rx="11" ry="12" fill="#c6ff45"/>
+  </g>
+  <ellipse cx="113" cy="100" rx="4" ry="8" fill="#0a0612"/>
+  <ellipse cx="147" cy="100" rx="4" ry="8" fill="#0a0612"/>
+  <circle cx="108" cy="93" r="2.6" fill="#fff"/>
+  <circle cx="142" cy="93" r="2.6" fill="#fff"/>
+  <path d="M96 82 L120 88 M160 82 L136 88" stroke="#3a0624" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- cheeks -->
+  <ellipse cx="98" cy="118" rx="7" ry="4" fill="#ff8fbf" opacity=".55"/>
+  <ellipse cx="158" cy="118" rx="7" ry="4" fill="#ff8fbf" opacity=".55"/>
+
+  <!-- grin with one fang -->
+  <path d="M108 120 C118 136 138 136 148 120 C138 128 118 128 108 120 Z" fill="#3a0624"/>
+  <path d="M136 125 L139 133 L142 124.5 Z" fill="#fff"/>
+
+  <!-- goatee -->
+  <path d="M122 146 L128 160 L134 146 Z" fill="#7d0c4e"/>
+</svg>

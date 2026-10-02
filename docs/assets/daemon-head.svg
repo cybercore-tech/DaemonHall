@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="DaemonHall daemon">
+  <defs>
+    <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff2d9e"/>
+      <stop offset="1" stop-color="#9a1060"/>
+    </linearGradient>
+    <linearGradient id="horn" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#b57bff"/>
+      <stop offset="1" stop-color="#22e6ff"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- horns -->
+  <path d="M17 24 C10 18 9 9 13 3 C15 10 19 15 25 18 Z" fill="url(#horn)"/>
+  <path d="M47 24 C54 18 55 9 51 3 C49 10 45 15 39 18 Z" fill="url(#horn)"/>
+  <!-- ears -->
+  <path d="M12 33 L3 27 L11 40 Z" fill="#c21a78"/>
+  <path d="M52 33 L61 27 L53 40 Z" fill="#c21a78"/>
+  <!-- head -->
+  <path d="M32 15 C46 15 53 24 53 35 C53 48 43 58 32 58 C21 58 11 48 11 35 C11 24 18 15 32 15 Z" fill="url(#skin)"/>
+  <!-- widow's peak -->
+  <path d="M25 16 L32 25 L39 16 Z" fill="#7d0c4e" opacity="0.7"/>
+  <!-- brows -->
+  <path d="M18 31 L28 34" stroke="#3a0624" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M46 31 L36 34" stroke="#3a0624" stroke-width="2.6" stroke-linecap="round"/>
+  <!-- eyes -->
+  <g filter="url(#glow)">
+    <ellipse cx="24" cy="38" rx="4.2" ry="3.2" fill="#c6ff45"/>
+    <ellipse cx="40" cy="38" rx="4.2" ry="3.2" fill="#c6ff45"/>
+  </g>
+  <rect x="23.2" y="35.4" width="1.6" height="5.2" rx="0.8" fill="#06080f"/>
+  <rect x="39.2" y="35.4" width="1.6" height="5.2" rx="0.8" fill="#06080f"/>
+  <!-- grin + fangs -->
+  <path d="M21 46 Q32 54 43 46 Q32 50 21 46 Z" fill="#3a0624"/>
+  <path d="M25 47.4 L26.6 51 L28.2 48.4 Z" fill="#f2f6ff"/>
+  <path d="M39 47.4 L37.4 51 L35.8 48.4 Z" fill="#f2f6ff"/>
+  <!-- goatee -->
+  <path d="M29 56 L32 63 L35 56 Z" fill="#7d0c4e"/>
+</svg>

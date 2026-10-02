@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en" data-theme="daemonhall-pumpkin-hall">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DaemonHall — every daemon you run, in one hall</title>
+  <meta name="description" content="DaemonHall: a web control room for your own systemd services. Live state, logs and history, start/stop/restart, timers, and new services from a form — locked to localhost and scoped by polkit.">
+  <meta name="theme-color" content="#0b0812">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pirata+One&family=JetBrains+Mono:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    window.SITE = {
+      defaultTheme: 'daemonhall-pumpkin-hall',
+      mashups: [
+        { id: 'daemonhall-pumpkin-hall', label: 'PUMPKIN HALL', base: 'synthwave-nightrun', accent: 'neosynth-flare' },
+        { id: 'daemonhall-hellfire', label: 'HELLFIRE', base: 'cyberdyne-t800', accent: 'cyberdyne-judgment' },
+        { id: 'daemonhall-witching-hour', label: 'WITCHING HOUR', base: 'neosynth-plasma', accent: 'synthwave-cassette' }
+      ]
+    };
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <!-- shared SVG symbols -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="bat" viewBox="0 0 64 28"><path d="M32 8c2-4 4-6 6-6-1 3 0 5 2 6 4-4 12-6 22-2-6 2-9 6-9 12-4-3-9-3-12 1-2-3-5-4-9-3-4-1-7 0-9 3-3-4-8-4-12-1 0-6-3-10-9-12 10-4 18-2 22 2 2-1 3-3 2-6 2 0 4 2 6 6z" fill="currentColor"/></symbol>
+    <symbol id="i-hall" viewBox="0 0 48 48"><path d="M8 44V22C8 12 15 5 24 3c9 2 16 9 16 19v22" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M14 44V24c0-6 4-10 10-12 6 2 10 6 10 12v20" fill="none" stroke="currentColor" stroke-width="2" opacity=".6"/><path d="M20 44V32M28 44V32" stroke="currentColor" stroke-width="2.5"/><path d="M20 28c-1.5-2 0-4 0-5 1.5 1 2 3 0 5zM28 28c-1.5-2 0-4 0-5 1.5 1 2 3 0 5z" fill="currentColor"/><path d="M4 44h40" stroke="currentColor" stroke-width="2.5"/></symbol>
+    <symbol id="i-scroll" viewBox="0 0 48 48"><path d="M12 8h26a4 4 0 0 1 0 8H34v22a6 6 0 0 1-6 6H10a4 4 0 0 1 0-8h4V12a4 4 0 0 0-4-4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><path d="M19 18h10M19 24h10M19 30h7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="31" cy="30" r="1.8" fill="currentColor"/></symbol>
+    <symbol id="i-hourglass" viewBox="0 0 48 48"><path d="M12 5h24M12 43h24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M15 5c0 10 9 13 9 19s-9 9-9 19M33 5c0 10-9 13-9 19s9 9 9 19" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M19 40c1-4 5-6 5-9 0 3 4 5 5 9z" fill="currentColor"/><circle cx="24" cy="16" r="1.5" fill="currentColor"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 48 48"><circle cx="24" cy="26" r="13" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M24 18v8l5 4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M11 22C6 18 3 20 1 23c3-1 5 1 5 3 2-2 4-1 5 0M37 22c5-4 8-2 10 1-3-1-5 1-5 3-2-2-4-1-5 0" fill="currentColor"/></symbol>
+    <symbol id="i-summon" viewBox="0 0 48 48"><circle cx="24" cy="24" r="19" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="24" cy="24" r="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 3"/><path d="M24 14v20M14 24h20" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/><circle cx="24" cy="5" r="2" fill="currentColor"/><circle cx="43" cy="24" r="2" fill="currentColor"/><circle cx="24" cy="43" r="2" fill="currentColor"/><circle cx="5" cy="24" r="2" fill="currentColor"/></symbol>
+    <symbol id="i-ghost" viewBox="0 0 48 48"><path d="M10 44V22C10 13 16 6 24 6s14 7 14 16v22l-5-4-4 4-5-4-5 4-4-4z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><circle cx="19" cy="22" r="2.6" fill="currentColor"/><circle cx="29" cy="22" r="2.6" fill="currentColor"/><path d="M20 30c2 2 6 2 8 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 48 48"><rect x="10" y="20" width="28" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M16 20v-6a8 8 0 0 1 16 0v6" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="24" cy="30" r="3" fill="currentColor"/><path d="M24 33v4" stroke="currentColor" stroke-width="2.5"/></symbol>
+    <symbol id="i-key" viewBox="0 0 48 48"><circle cx="15" cy="24" r="8" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M23 24h20M37 24v6M42 24v4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="15" cy="24" r="2.5" fill="currentColor"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 48 48"><path d="M24 4 40 10v12c0 11-7 18-16 22C15 40 8 33 8 22V10z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><path d="m17 24 5 5 9-10" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 48 48"><path d="M3 24s8-13 21-13 21 13 21 13-8 13-21 13S3 24 3 24z" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="24" cy="24" r="6" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M24 20v8" stroke="currentColor" stroke-width="2.5"/></symbol>
+    <symbol id="i-quill" viewBox="0 0 48 48"><path d="M40 6C24 8 14 18 10 38l4 2C18 26 26 18 40 6z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><path d="M8 44l6-6M20 24h8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-seal" viewBox="0 0 48 48"><circle cx="24" cy="22" r="14" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M17 34l-5 11 7-3 4 6 1-10M31 34l5 11-7-3-4 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="m24 13 2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z" fill="currentColor"/></symbol>
+  </svg>
+
+  <header class="top">
+    <div class="wrap top-row">
+      <a class="brand" href="https://cybercore-tech.github.io/" aria-label="Cybercore Tech home"><span class="brand-emblem">CC</span><span class="brand-name">CYBERCORE<b>TECH</b></span></a>
+      <nav class="nav" aria-label="Sections">
+        <a href="#inside">Inside</a><a href="#night">A night</a><a href="#wards">Wards</a><a href="#coven">Coven</a><a href="#summon">Install</a>
+        <a class="gh" href="https://github.com/cybercore-tech/DaemonHall">GitHub</a>
+      </nav>
+      <div class="theme-picker"><span class="theme-label">THEME</span><button id="themeButton" class="theme-button" type="button" aria-haspopup="listbox" aria-expanded="false">…</button><div id="themeMenu" class="theme-menu" role="listbox" aria-label="Themes" hidden></div></div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ── HERO ─────────────────────────────────────────────────────── -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="sky" aria-hidden="true">
+        <div class="moon"></div>
+        <svg class="bat b1"><use href="#bat"/></svg>
+        <svg class="bat b2"><use href="#bat"/></svg>
+        <svg class="bat b3"><use href="#bat"/></svg>
+        <svg class="bat b4"><use href="#bat"/></svg>
+        <svg class="skyline" viewBox="0 0 1200 220" preserveAspectRatio="none">
+          <path d="M0 220V150h40v-30h10v-20l8-14 8 14v20h10v30h40v-60l20-30 20 30v60h30V80l6-12 6 12v10h12V40l14-28 14 28v50h12V80l6-12 6 12v80h40v-30h60v30h30V60l25-40 25 40v100h30v-40h20v-26l10-18 10 18v26h20v40h50V90l18-30 18 30v70h40v-20h60v20h30V70l12-22 12 22v90h40v-40h16V96l8-16 8 16v24h16v40h60v220z" fill="currentColor"/>
+          <g fill="var(--orange)" opacity=".85"><rect x="166" y="120" width="5" height="9"/><rect x="186" y="98" width="5" height="9"/><rect x="460" y="92" width="6" height="10"/><rect x="474" y="118" width="6" height="10"/><rect x="704" y="110" width="5" height="9"/><rect x="890" y="100" width="5" height="9"/><rect x="1060" y="130" width="5" height="9"/></g>
+        </svg>
+        <div class="fog"></div>
+      </div>
+
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="kicker"><span class="dot"></span> systemd · localhost · <span data-active-theme>PUMPKIN HALL</span></p>
+          <h1 id="hero-title" class="title">Daemon<span>Hall</span></h1>
+          <p class="lede">Every daemon you run, summoned into one hall. Live state, logs and history, start and stop, timers, and new services from a form — for your own systemd services, on <code>127.0.0.1</code>.</p>
+          <div class="cta">
+            <a class="btn btn-hot" href="#summon">Summon it</a>
+            <a class="btn" href="https://github.com/cybercore-tech/DaemonHall">Source on GitHub</a>
+          </div>
+          <ul class="facts" aria-label="At a glance">
+            <li><b>Rust</b> axum</li><li><b>72+3</b> themes</li><li><b>0</b> cloud</li><li><b>MIT</b></li>
+          </ul>
+        </div>
+        <div class="hero-art">
+          <div class="arch">
+            <div class="arch-glow" aria-hidden="true"></div>
+            <img class="mascot" src="assets/daemon.svg" width="260" height="320" alt="The DaemonHall daemon: a grinning pink imp with horns, a bat-wing cape, a pitchfork and a glowing jack-o-lantern bucket">
+            <svg class="pumpkin-small" viewBox="0 0 60 50" aria-hidden="true"><path d="M30 10c14 0 26 6 26 20S44 48 30 48 4 44 4 30 16 10 30 10z" fill="var(--orange)"/><path d="M22 12c-4 10-4 24 0 34M38 12c4 10 4 24 0 34" fill="none" stroke="#0006" stroke-width="2"/><path d="M28 10c0-5 3-8 7-9" fill="none" stroke="var(--acid)" stroke-width="3" stroke-linecap="round"/><path d="M16 26l6-5 2 7zM44 26l-6-5-2 7zM18 35l5 4 4-3 3 4 3-4 4 3 5-4c-3 7-21 7-24 0z" fill="#1a0c00"/></svg>
+          </div>
+        </div>
+      </div>
+      <svg class="web web-l" viewBox="0 0 200 200" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M0 0L200 200M0 0L110 200M0 0L200 110M0 0L40 200M0 0L200 40"/><path d="M0 40Q30 30 40 0M0 80Q60 60 80 0M0 120Q90 90 120 0M0 160Q120 120 160 0M0 200Q150 150 200 0"/></g></svg>
+      <svg class="web web-r" viewBox="0 0 200 200" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M0 0L200 200M0 0L110 200M0 0L200 110M0 0L40 200M0 0L200 40"/><path d="M0 40Q30 30 40 0M0 80Q60 60 80 0M0 120Q90 90 120 0M0 160Q120 120 160 0M0 200Q150 150 200 0"/></g></svg>
+      <div class="spider" aria-hidden="true"><i></i></div>
+    </section>
+
+    <!-- ── INSIDE THE HALL ──────────────────────────────────────────── -->
+    <section class="wrap section" id="inside" aria-labelledby="inside-title">
+      <header class="sec-head reveal"><p class="eyebrow">01 · rooms of the hall</p><h2 id="inside-title">Inside the hall</h2><p>Six rooms. One for every way a daemon can need you.</p></header>
+      <div class="vaults">
+        <article class="vault reveal" style="--c:var(--orange)"><svg class="v-icon"><use href="#i-hall"/></svg><h3>The Hall</h3><p>Every watched unit as a card: state, uptime, CPU, memory, restarts. Filter by what's failing; start, stop or restart from the card.</p><span class="v-tag">system + user units</span></article>
+        <article class="vault reveal" style="--c:var(--acid)"><svg class="v-icon"><use href="#i-scroll"/></svg><h3>Live logs</h3><p>The journal, streamed as it's written. Filter, show only warnings or errors, pause, follow. Colour codes cleaned up.</p><span class="v-tag">server-sent events</span></article>
+        <article class="vault reveal" style="--c:var(--purple)"><svg class="v-icon"><use href="#i-hourglass"/></svg><h3>The Chronicle</h3><p>Every start, stop, crash and auto-restart, read from systemd's own records, so history goes back further than DaemonHall does.</p><span class="v-tag">repeats folded ×N</span></article>
+        <article class="vault reveal" style="--c:var(--cyan)"><svg class="v-icon"><use href="#i-clock"/></svg><h3>The Clockwork</h3><p>All your timers with their real next and last run and the last result. Run any of them now, or switch one off.</p><span class="v-tag">calendar + interval timers</span></article>
+        <article class="vault reveal" style="--c:var(--pink)"><svg class="v-icon"><use href="#i-summon"/></svg><h3>The Summoning Room</h3><p>Create a service from a form, with a live preview of the unit file: hardened by default, optional schedule, verified before it's installed.</p><span class="v-tag">user or system</span></article>
+        <article class="vault reveal" style="--c:var(--red)"><svg class="v-icon"><use href="#i-ghost"/></svg><h3>Hauntings</h3><p>A desktop notification when a daemon dies, comes back, or flaps — three restarts in ten minutes and you'll hear about it.</p><span class="v-tag">fail · recover · flap</span></article>
+      </div>
+    </section>
+
+    <!-- ── A NIGHT IN THE HALL ──────────────────────────────────────── -->
+    <section class="wrap section night" id="night" aria-labelledby="night-title">
+      <header class="sec-head reveal"><p class="eyebrow">02 · 03:13 am</p><h2 id="night-title">A night in the hall</h2><p>Something always goes bump. This is what you see when it does.</p></header>
+      <div class="scene reveal">
+        <div class="window" role="img" aria-label="Illustration of the DaemonHall dashboard: cards for wraithflow, argus, cyberdesk, dockspace and a sigilward timer; one card, cratestats, is failing and a 'service failed' alert has popped up">
+          <div class="win-bar"><i></i><i></i><i></i><span>daemonhall — the hall · 31 daemons</span></div>
+          <div class="cards">
+            <div class="card up"><b>wraithflow</b><small>running · 6h 24m</small><em>CPU 0.3% · 1.5 MB</em></div>
+            <div class="card up"><b>argus</b><small>running · 1d 0h</small><em>CPU 0.0% · 1.5 MB</em></div>
+            <div class="card fail"><b>cratestats</b><small>failed · exit-code</small><em>restarts 3 · flapping</em></div>
+            <div class="card up"><b>cyberdesk</b><small>user · running</small><em>CPU 0.1% · 22 MB</em></div>
+            <div class="card timer"><b>sigilward-check</b><small>timer · next in 3h 58m</small><em>last run: success</em></div>
+            <div class="card up"><b>dockspace</b><small>running · 21h 5m</small><em>CPU 0.0% · 18 MB</em></div>
+          </div>
+          <div class="toast" aria-hidden="true"><svg><use href="#i-ghost"/></svg><span><b>Service flapping</b>cratestats restarted 3× in 10 min</span></div>
+        </div>
+        <pre class="term" data-type aria-label="Terminal session"><span><span class="p">❯</span> ./packaging/install.sh</span><span class="ok">DaemonHall is up: http://127.0.0.1:8767/</span><span><span class="p">❯</span> sudo ./packaging/install-root.sh</span><span class="ok">polkit rule updated: 10 units</span><span><span class="p">❯</span> curl -X POST 127.0.0.1:8767/api/…</span><span class="bad">403 missing or bad DaemonHall token</span><span class="dim"># good. strangers don't get in.</span></pre>
+      </div>
+    </section>
+
+    <!-- ── WARDS ────────────────────────────────────────────────────── -->
+    <section class="wrap section" id="wards" aria-labelledby="wards-title">
+      <header class="sec-head reveal"><p class="eyebrow">03 · wards &amp; seals</p><h2 id="wards-title">It can stop your services.<br>So it's built to be boring to attack.</h2></header>
+      <div class="wards">
+        <div class="ward reveal"><svg><use href="#i-lock"/></svg><div><h3>Localhost, checked twice</h3><p>Bound to <code>127.0.0.1</code>, and every request must say <code>Host: 127.0.0.1:8767</code>, which shuts out DNS-rebinding tricks.</p></div></div>
+        <div class="ward reveal"><svg><use href="#i-key"/></svg><div><h3>A token per run</h3><p>Every change needs a fresh token from the page plus a matching <code>Origin</code>. Another tab in your browser can't read it, so it can't forge a click.</p></div></div>
+        <div class="ward reveal"><svg><use href="#i-shield"/></svg><div><h3>Polkit, scoped tight</h3><p>Only you, only the units you watch, only hand-installed files in <code>/etc/systemd/system</code>. Distro units and everything else still ask for a password.</p></div></div>
+        <div class="ward reveal"><svg><use href="#i-quill"/></svg><div><h3>No raw unit text</h3><p>New units are written by a tiny root helper from validated fields: <code>User=</code> forced to you, no <code>+</code> prefixes, <code>%</code> escaped, <code>systemd-analyze verify</code> first.</p></div></div>
+        <div class="ward reveal"><svg><use href="#i-eye"/></svg><div><h3>Everything on the record</h3><p>Every action from the hall lands in the Chronicle, marked "via hall", next to what systemd itself saw.</p></div></div>
+        <div class="ward reveal"><svg><use href="#i-seal"/></svg><div><h3>Backups before burial</h3><p>Deleting a unit stops, disables and removes it — and keeps a copy first. Editing a system unit is <code>sudoedit</code>: your password, every time.</p></div></div>
+      </div>
+    </section>
+
+    <!-- ── COVEN ────────────────────────────────────────────────────── -->
+    <section class="wrap section" id="coven" aria-labelledby="coven-title">
+      <header class="sec-head reveal"><p class="eyebrow">04 · the coven</p><h2 id="coven-title">One watch list, three ways in</h2><p>DaemonHall is the big sibling of <a href="https://cybercore-tech.github.io/cyberwatch/">cyberwatch</a>. They read the same list and agree on what "needs attention" means.</p></header>
+      <figure class="coven reveal">
+        <svg viewBox="0 0 900 300" role="img" aria-labelledby="coven-desc">
+          <desc id="coven-desc">Diagram: the shared watch list, ~/.config/cyberwatch/config.json, feeds three tools: the cyberwatch bar widget, the cyberwatch TUI, and the DaemonHall web app on 127.0.0.1:8767.</desc>
+          <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5 0 10z" fill="var(--muted)"/></marker></defs>
+          <g class="cv-node"><rect x="320" y="20" width="260" height="70" rx="6"/><text x="450" y="50" class="cv-t">WATCH LIST</text><text x="450" y="72" class="cv-s">~/.config/cyberwatch/config.json</text></g>
+          <path d="M380 92 C300 150 180 160 150 200" class="cv-line" marker-end="url(#arr)"/>
+          <path d="M450 92 V200" class="cv-line" marker-end="url(#arr)"/>
+          <path d="M520 92 C600 150 720 160 750 200" class="cv-line hot" marker-end="url(#arr)"/>
+          <g class="cv-node"><rect x="40" y="205" width="220" height="70" rx="6"/><text x="150" y="235" class="cv-t">BAR WIDGET</text><text x="150" y="257" class="cv-s">count in the Omarchy bar</text></g>
+          <g class="cv-node"><rect x="340" y="205" width="220" height="70" rx="6"/><text x="450" y="235" class="cv-t">CYBERWATCH TUI</text><text x="450" y="257" class="cv-s">keyboard, in a terminal</text></g>
+          <g class="cv-node hot"><rect x="640" y="205" width="220" height="70" rx="6"/><text x="750" y="235" class="cv-t">DAEMONHALL</text><text x="750" y="257" class="cv-s">the hall · 127.0.0.1:8767</text></g>
+        </svg>
+      </figure>
+    </section>
+
+    <!-- ── INSTALL ──────────────────────────────────────────────────── -->
+    <section class="wrap section" id="summon" aria-labelledby="summon-title">
+      <header class="sec-head reveal"><p class="eyebrow">05 · the ritual</p><h2 id="summon-title">Summon it</h2><p>Two steps. The second is only for controlling <em>system</em> services; user services work without it.</p></header>
+      <div class="ritual">
+        <div class="step reveal"><span class="step-n">I</span><h3>Build &amp; start</h3>
+<pre class="code" data-copy><code>git clone https://github.com/cybercore-tech/DaemonHall
+cd DaemonHall
+./packaging/install.sh</code></pre>
+          <p class="muted">Installs <code>~/.local/bin/daemonhall</code> and a user service, then opens on <a href="http://127.0.0.1:8767/">127.0.0.1:8767</a>.</p></div>
+        <div class="step reveal"><span class="step-n">II</span><h3>Bind the seals (optional)</h3>
+<pre class="code" data-copy><code>sudo ./packaging/install-root.sh</code></pre>
+          <p class="muted">Installs the root helper and a polkit rule scoped to your watched units. Undo with <code>--uninstall</code>.</p></div>
+        <div class="step reveal"><span class="step-n">III</span><h3>Needs</h3>
+          <ul class="needs"><li>Linux with systemd</li><li>Rust (stable)</li><li><a href="https://github.com/cybercore-tech/cybercore">cybercore</a> and <a href="https://github.com/cybercore-tech/cyberwatch">cyberwatch</a> checked out in <code>~/.sysops</code></li><li>A browser. That's it.</li></ul></div>
+      </div>
+    </section>
+
+    <!-- ── THEMES ───────────────────────────────────────────────────── -->
+    <section class="wrap section" id="themes" aria-labelledby="themes-title">
+      <div class="theme-strip reveal">
+        <div><span class="label">NOW HAUNTING · <span id="themeCount">…</span></span><div class="now" data-active-theme>…</div><div class="recipe" id="themeRecipe"></div></div>
+        <div class="swatches" id="swatches" aria-label="Active palette"></div>
+        <p class="muted" id="themes-title">Three Halloween mashups on top of the 72 CYBERGRID themes — the same palettes DaemonHall itself ships with. Pick one up top.</p>
+      </div>
+    </section>
+  </main>
+
+  <section class="contact-band" aria-label="Contact Cybercore Tech">
+    <div class="wrap"><cybercore-contact repo="DaemonHall"><a href="mailto:dev@cybercoretech.net">dev@cybercoretech.net</a></cybercore-contact></div>
+  </section>
+  <footer>
+    <div class="wrap foot"><img src="assets/daemon-head.svg" width="28" height="28" alt=""><span>CYBERCORE TECH / DAEMONHALL / MIT / © <span id="year"></span></span><span><a href="https://cybercore-tech.github.io/">CYBERCORE-TECH.GITHUB.IO</a> · <a href="https://github.com/cybercore-tech/DaemonHall">SOURCE</a></span></div>
+  </footer>
+
+  <script src="app.js" defer></script>
+  <script type="module" src="https://cybercore-tech.github.io/kit/contact.js"></script>
+</body>
+</html>
