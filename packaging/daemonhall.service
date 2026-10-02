@@ -1,0 +1,15 @@
+[Unit]
+Description=DaemonHall — web control room for your own systemd services (127.0.0.1:8767)
+Documentation=https://github.com/cybercore-tech/DaemonHall
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/daemonhall
+Restart=on-failure
+RestartSec=3
+# No NoNewPrivileges= here on purpose: DaemonHall runs pkexec (setuid) to
+# reach its root helper, which that setting would block.
+
+[Install]
+WantedBy=default.target
