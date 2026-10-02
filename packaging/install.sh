@@ -10,6 +10,9 @@ cargo build --release --locked
 target_dir="$(cargo metadata --format-version 1 --no-deps | python3 -c 'import sys,json;print(json.load(sys.stdin)["target_directory"])')"
 
 install -Dm755 "$target_dir/release/daemonhall" "$HOME/.local/bin/daemonhall"
+# Staged for install-root.sh, which copies it root-owned into /usr/local/bin
+# (so the root side never has to run cargo or know your CARGO_TARGET_DIR).
+install -Dm755 "$target_dir/release/daemonhall-unitctl" "$HOME/.local/share/daemonhall/daemonhall-unitctl"
 install -Dm644 packaging/daemonhall.service "$HOME/.config/systemd/user/daemonhall.service"
 systemctl --user daemon-reload
 systemctl --user enable --now daemonhall.service
