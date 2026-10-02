@@ -1,0 +1,29 @@
+[package]
+name = "daemonhall"
+version = "0.1.0"
+edition = "2024"
+description = "DaemonHall — web control room for your own systemd services (Cybercore Tech)"
+license = "MIT"
+repository = "https://github.com/cybercore-tech/DaemonHall"
+default-run = "daemonhall"
+
+[dependencies]
+anyhow = "1.0"
+axum = "0.7"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "process", "io-util", "time", "sync", "net", "signal", "fs"] }
+tokio-stream = { version = "0.1", features = ["io-util"] }
+futures-util = "0.3"
+tower-http = { version = "0.5", features = ["fs"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+dirs = "6"
+
+# Shared CYBERGRID palette + tokens (same bridge as cyberdeck-hub), and
+# cyberwatch's discovery/status logic so the TUI, bar widget and DaemonHall
+# agree on which units are yours. Path deps, like the rest of the family.
+cybercore = { path = "/home/raven/.sysops/cybercore" }
+cyberwatch = { path = "/home/raven/.sysops/cyberwatch" }
+
+[profile.release]
+strip = true
+lto = "thin"
