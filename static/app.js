@@ -9,9 +9,6 @@
 "use strict";
 
 const TOKEN = document.querySelector('meta[name="dh-token"]').content;
-const DEFAULT_THEME = document.querySelector('meta[name="dh-default-theme"]').content;
-const THEME_KEY = "daemonhall-theme";
-const CT_PREFIX = "daemonhall-custom-theme-";
 const POLL_MS = 3000;
 
 const view = document.getElementById("view");
@@ -103,30 +100,24 @@ function displayName(u) { return u.name.replace(/\.service$/, ""); }
 /// A service started by a timer: being inactive between runs is normal.
 const timerDriven = (u) => u.kind === "service" && u.triggered_by.some((t) => t.endsWith(".timer"));
 
-// ── theme picker + creator (same behaviour as cyberdeck-hub) ───────────
-const CT_ROLES = ["bg", "fg", "acid", "pink", "purple", "cyan", "orange", "red", "panel", "line", "muted"];
-const CT_FILE_KEY_MAP = { bg: "bg", white: "fg", acid_green: "acid", hot_pink: "pink", purple: "purple", cyan: "cyan", orange: "orange", red: "red", panel: "panel", line: "line", muted: "muted" };
-const lsGet = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
-const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch { /* private window */ } };
-const lsKeys = () => { try { return Object.keys(localStorage); } catch { return []; } };
+// ── shared Cybercore theme catalog ─────────────────────────────────────
+let themeCatalog = [];
+let themeAppearance = "dark";
 
-function applyTheme(name) {
-  const style = document.getElementById("theme-vars");
-  if (name.startsWith("custom:")) {
-    const css = lsGet(CT_PREFIX + name.slice(7));
-    if (css) style.textContent = css;
-  } else {
-    fetch("/api/cybergrid/css/" + encodeURIComponent(name)).then((r) => r.text()).then((css) => { style.textContent = css; });
-  }
-  lsSet(THEME_KEY, name);
-  document.getElementById("theme-picker-label").textContent = name.startsWith("custom:") ? name.slice(7) : name;
-  document.querySelectorAll("#theme-dropdown .theme-item").forEach((el) => el.classList.toggle("selected", el.dataset.value === name));
+async function applyTheme(id, persist = false) {
+  const theme = themeCatalog.find((entry) => entry.id === id);
+  if (!theme) return;
+  if (persist) await api("POST", "/api/cybergrid/active/" + enc(id), {});
+  const css = await api("GET", `/api/cybergrid/css/${enc(id)}?appearance=${themeAppearance}`);
+  document.getElementById("theme-vars").textContent = css;
+  document.getElementById("theme-picker-label").textContent = theme.name;
+  document.querySelectorAll("#theme-dropdown .theme-item").forEach((el) => el.classList.toggle("selected", el.dataset.value === id));
 }
 function closeDropdowns() {
   document.getElementById("theme-dropdown").hidden = true;
   document.getElementById("theme-picker-btn").setAttribute("aria-expanded", "false");
 }
-function setupTheme() {
+async function setupTheme() {
   const btn = document.getElementById("theme-picker-btn");
   const dd = document.getElementById("theme-dropdown");
   btn.addEventListener("click", (e) => {
@@ -144,85 +135,32 @@ function setupTheme() {
   });
   dd.addEventListener("click", (e) => {
     const item = e.target.closest(".theme-item");
-    if (item) { applyTheme(item.dataset.value); closeDropdowns(); }
+    if (item) { applyTheme(item.dataset.value, true).catch((error) => toast(error.message, "err")); closeDropdowns(); }
   });
-  dd.querySelectorAll(".theme-item").forEach((el) => { el.tabIndex = 0; });
   dd.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && e.target.classList.contains("theme-item")) { applyTheme(e.target.dataset.value); closeDropdowns(); btn.focus(); }
+    if (e.key === "Enter" && e.target.classList.contains("theme-item")) { applyTheme(e.target.dataset.value, true).catch((error) => toast(error.message, "err")); closeDropdowns(); btn.focus(); }
   });
   document.addEventListener("click", (e) => { if (!e.target.closest(".theme-dropdown-wrap")) closeDropdowns(); });
-  loadCustomThemes();
-  const saved = lsGet(THEME_KEY) || DEFAULT_THEME;
-  const exists = saved.startsWith("custom:") ? !!lsGet(CT_PREFIX + saved.slice(7)) : !!dd.querySelector(`.theme-item[data-value="${CSS.escape(saved)}"]`);
-  applyTheme(exists ? saved : DEFAULT_THEME);
-
-  // creator
-  const overlay = document.getElementById("theme-creator-overlay");
-  document.getElementById("theme-creator-btn").addEventListener("click", () => {
-    const grid = document.getElementById("ct-swatches");
-    const cs = getComputedStyle(document.documentElement);
-    grid.replaceChildren(...CT_ROLES.map((role) =>
-      h("label", { class: "ct-swatch" }, role,
-        h("input", { type: "color", id: "ct-" + role, value: toHex(cs.getPropertyValue("--" + role).trim()), oninput: previewCustom }))));
-    overlay.hidden = false;
-  });
-  overlay.querySelectorAll("[data-close-creator]").forEach((b) => b.addEventListener("click", closeCreator));
-  overlay.addEventListener("click", (e) => { if (e.target === overlay) closeCreator(); });
-  document.getElementById("ct-save").addEventListener("click", () => {
-    const name = document.getElementById("ct-name").value.trim();
-    if (!name) { toast("Name the theme first.", "warn"); return; }
-    lsSet(CT_PREFIX + name, customCss());
-    loadCustomThemes();
-    applyTheme("custom:" + name);
-    overlay.hidden = true;
-  });
-  document.getElementById("ct-reset").addEventListener("click", () => {
-    applyTheme(lsGet(THEME_KEY) || DEFAULT_THEME);
-    setTimeout(() => {
-      const cs = getComputedStyle(document.documentElement);
-      CT_ROLES.forEach((r) => { document.getElementById("ct-" + r).value = toHex(cs.getPropertyValue("--" + r).trim()); });
-    }, 150);
-  });
-  document.getElementById("ct-import").addEventListener("click", () => document.getElementById("ct-file-input").click());
-  document.getElementById("ct-file-input").addEventListener("change", (e) => {
-    const f = e.target.files[0];
-    if (!f) return;
-    f.text().then((t) => {
-      let d;
-      try { d = JSON.parse(t); } catch { toast("Not valid JSON.", "err"); return; }
-      let n = 0;
-      for (const [k, role] of Object.entries(CT_FILE_KEY_MAP)) {
-        if (typeof d[k] === "string" && d[k]) { document.getElementById("ct-" + role).value = d[k].startsWith("#") ? d[k] : "#" + d[k]; n++; }
-      }
-      if (!n) { toast("No cybercore palette fields in that file.", "err"); return; }
-      if (!document.getElementById("ct-name").value) document.getElementById("ct-name").value = f.name.replace(/\.json$/i, "");
-      previewCustom();
-    });
-  });
-  document.getElementById("ct-export").addEventListener("click", () => {
-    const data = {};
-    for (const [k, role] of Object.entries(CT_FILE_KEY_MAP)) data[k] = document.getElementById("ct-" + role).value.replace("#", "");
-    const a = h("a", { href: URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })), download: (document.getElementById("ct-name").value.trim() || "custom-theme") + ".json" });
-    document.body.append(a); a.click(); a.remove();
-  });
-}
-function toHex(v) {
-  if (/^#[0-9a-f]{6}$/i.test(v)) return v;
-  const m = v.match(/^#([0-9a-f])([0-9a-f])([0-9a-f])$/i);
-  return m ? "#" + m[1] + m[1] + m[2] + m[2] + m[3] + m[3] : "#888888";
-}
-const customCss = () => ":root{" + CT_ROLES.map((r) => `--${r}:${document.getElementById("ct-" + r).value};`).join("") + "}";
-function previewCustom() { document.getElementById("theme-vars").textContent = customCss(); }
-function closeCreator() {
-  document.getElementById("theme-creator-overlay").hidden = true;
-  applyTheme(lsGet(THEME_KEY) || DEFAULT_THEME);
-}
-function loadCustomThemes() {
-  const group = document.getElementById("custom-theme-group");
-  const keys = lsKeys().filter((k) => k.startsWith(CT_PREFIX));
-  group.hidden = !keys.length;
-  group.replaceChildren(...(keys.length ? [h("div", { class: "theme-group-label", text: "Custom (this browser)" })] : []),
-    ...keys.map((k) => { const n = k.slice(CT_PREFIX.length); return h("div", { class: "theme-item", "data-value": "custom:" + n, tabindex: "0", role: "option", text: n }); }));
+  const catalog = await api("GET", "/api/cybergrid/themes");
+  themeCatalog = catalog.themes;
+  themeAppearance = catalog.appearance;
+  const groups = new Map();
+  for (const theme of themeCatalog) {
+    const family = theme.family || "Other";
+    if (!groups.has(family)) groups.set(family, []);
+    groups.get(family).push(theme);
+  }
+  dd.replaceChildren(...[...groups].flatMap(([family, themes]) => [
+    h("div", { class: "theme-group-label", text: family }),
+    ...themes.map((theme) => h("div", {
+      class: "theme-item",
+      "data-value": theme.id,
+      tabindex: "0",
+      role: "option",
+      text: theme.name,
+    })),
+  ]));
+  await applyTheme(catalog.active);
 }
 
 // ── modal ──────────────────────────────────────────────────────────────
@@ -243,7 +181,6 @@ document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
   closeDropdowns();
   if (!modal.hidden) closeModal();
-  if (!document.getElementById("theme-creator-overlay").hidden) closeCreator();
 });
 
 // ── actions ────────────────────────────────────────────────────────────
@@ -881,7 +818,7 @@ function startPolling() {
 document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
 
 window.addEventListener("hashchange", route);
-setupTheme();
+setupTheme().catch((error) => toast("Could not load shared themes: " + error.message, "err"));
 api("GET", "/api/meta").then((m) => { meta = m; document.getElementById("brand-host").textContent = "@" + m.host; }).catch(() => {});
 route();
 startPolling();

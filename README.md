@@ -3,7 +3,7 @@
 # DaemonHall
 
 A web control room for **your own systemd services**: every daemon you run, live, in one hall.
-Rust (axum), served on `127.0.0.1:8767`, styled with the shared CYBERGRID palette (all 72 themes, plus custom ones).
+Rust (axum), served on `127.0.0.1:8767`, styled with the shared CYBERGRID theme catalog: built-in palettes and custom themes made in Cybercore Theme Studio.
 
 It's the web big sibling of [cyberwatch](https://github.com/cybercore-tech/cyberwatch) (the Omarchy bar widget + TUI): same watch list, same discovery, same idea of what "needs attention" means.
 
@@ -25,7 +25,22 @@ cd DaemonHall
 sudo ./packaging/install-root.sh  # optional: lets it control *system* services
 ```
 
-Then open <http://127.0.0.1:8767/>. Needs Rust, systemd and the [cybercore](https://github.com/cybercore-tech/cybercore) and cyberwatch crates checked out under `~/.sysops` (path dependencies, like the rest of the family).
+Then open <http://127.0.0.1:8767/>. Needs Rust and systemd. Cargo fetches
+Cybercore and cyberwatch from pinned upstream Git revisions so this release
+uses their shared theme-catalog and unit-discovery APIs.
+
+The theme picker reads the shared Cybercore catalog, including custom themes
+saved by [Cybercore Theme Studio](https://github.com/cybercore-tech/cybercore/tree/main/theme-studio).
+Open Studio at <http://127.0.0.1:8761/> using the **Theme Studio** link in
+DaemonHall; saved themes are shared with other Cybercore apps using the same
+user configuration directory.
+
+DaemonHall exposes the catalog through `GET /api/cybergrid/themes` and
+`GET /api/cybergrid/css/:id?appearance=dark|light`. The current selection is
+shared through `POST /api/cybergrid/active/:id`; these write requests use the
+same per-run token as DaemonHall's other state changes. The picker groups
+built-in and custom themes from catalog metadata instead of browser-local
+palette copies.
 
 ## Security model
 

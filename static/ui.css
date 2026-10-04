@@ -309,20 +309,10 @@ a.uc-name:hover { color: var(--cyan); }
 
 /* ── modal + toasts ────────────────────────────────────────────────── */
 .viewer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 2rem; }
-#theme-creator-overlay { background: rgba(0,0,0,0.35); }
 .viewer-window { width: min(640px, 100%); max-height: 85vh; display: flex; flex-direction: column; }
 .viewer-body { overflow: auto; flex: 1; min-height: 0; }
 .modal-pad { padding: 1rem 1.15rem; }
 .viewer-actions { display: flex; gap: 0.5rem; padding: 0.6rem 1rem; border-top: 1px solid var(--line); justify-content: flex-end; flex-wrap: wrap; }
-.ct-window { width: min(1100px, 96vw); }
-.ct-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
-.ct-controls { padding: 1.1rem; }
-.ct-controls .text-input { width: 100%; margin-bottom: 0.4rem; }
-.ct-preview { padding: 1.1rem; background: var(--bg); border-left: 1px solid var(--line); }
-.ct-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 0.6rem; }
-.ct-swatch { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.7rem; color: var(--muted); text-transform: uppercase; }
-.ct-swatch input { width: 100%; height: 2.1rem; border: 1px solid var(--line); border-radius: 3px; background: var(--bg); padding: 2px; cursor: pointer; }
-@media (max-width: 800px) { .ct-layout { grid-template-columns: 1fr; } .ct-preview { border-left: none; border-top: 1px solid var(--line); } }
 
 .toasts { position: fixed; right: 1rem; bottom: 1rem; z-index: 1100; display: flex; flex-direction: column; gap: 0.5rem; max-width: min(420px, calc(100vw - 2rem)); }
 .toast {

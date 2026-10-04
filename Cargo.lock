@@ -302,13 +302,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "cybercore"
+version = "0.6.0"
+source = "git+https://github.com/cybercore-tech/cybercore?rev=614a5864cac14b43996e5fe7c003a93a8d5f1dad#614a5864cac14b43996e5fe7c003a93a8d5f1dad"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "cyberwatch"
 version = "0.1.0"
 source = "git+https://github.com/cybercore-tech/cyberwatch?rev=ffd3b1bba4f378f4451035bcde23f6f851d64dd5#ffd3b1bba4f378f4451035bcde23f6f851d64dd5"
 dependencies = [
  "anyhow",
  "crossterm",
- "cybercore",
+ "cybercore 0.5.0",
  "dirs",
  "ratatui",
  "serde",
@@ -321,7 +330,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum",
- "cybercore",
+ "cybercore 0.6.0",
  "cyberwatch",
  "dirs",
  "futures-util",

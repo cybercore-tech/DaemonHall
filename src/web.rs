@@ -41,6 +41,11 @@ pub fn router(state: Shared) -> Router {
         .route("/vendor/tokens.css", get(tokens_css))
         .route("/api/cybergrid/themes", get(cybergrid::list_themes))
         .route("/api/cybergrid/css/:name", get(cybergrid::theme_css))
+        .route("/api/cybergrid/active/:id", post(cybergrid::select_theme))
+        .route(
+            "/api/cybergrid/appearance/:mode",
+            post(cybergrid::select_appearance),
+        )
         .route("/api/meta", get(meta))
         .route("/api/units", get(units))
         .route("/api/unit/:id", get(unit_detail))
