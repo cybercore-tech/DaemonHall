@@ -18,10 +18,9 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 dirs = "6"
 
-# Shared CYBERGRID theme documents/catalog and tokens. The catalog API is
-# newer than the published 0.6 crate, so pin the exact upstream commit until
-# its next crates.io release. cyberwatch stays pinned to its own Git revision.
-cybercore = "0.7"
+# Shared CYBERGRID theme engine. cyberwatch stays pinned to its own Git
+# revision.
+cybercore = "0.8"
 cyberwatch = { git = "https://github.com/cybercore-tech/cyberwatch", rev = "ffd3b1bba4f378f4451035bcde23f6f851d64dd5" }
 
 [profile.release]

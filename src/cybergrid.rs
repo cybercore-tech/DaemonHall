@@ -6,9 +6,30 @@
 use axum::Json;
 use axum::extract::{Path, Query};
 use axum::http::{StatusCode, header};
+use axum::response::sse::{Event, KeepAlive, Sse};
 use axum::response::{IntoResponse, Response};
+use futures_util::stream::{self, Stream};
 use serde::Deserialize;
 use serde_json::{Value, json};
+use std::{convert::Infallible, time::Duration};
+
+pub async fn theme_events() -> Sse<impl Stream<Item = Result<Event, Infallible>>> {
+    let events = stream::unfold(None, |last_revision| async move {
+        loop {
+            if let Ok(catalog) = catalog() {
+                let revision = catalog.revision();
+                if last_revision != Some(revision) {
+                    let event = Event::default()
+                        .event("theme-change")
+                        .data(revision.to_string());
+                    return Some((Ok(event), Some(revision)));
+                }
+            }
+            tokio::time::sleep(Duration::from_millis(500)).await;
+        }
+    });
+    Sse::new(events).keep_alive(KeepAlive::default())
+}
 
 fn catalog() -> Result<cybercore::theme::ThemeCatalog, cybercore::theme::ThemeError> {
     cybercore::theme::ThemeCatalog::load()

@@ -25,9 +25,9 @@ cd DaemonHall
 sudo ./packaging/install-root.sh  # optional: lets it control *system* services
 ```
 
-Then open <http://127.0.0.1:8767/>. Needs Rust and systemd. Cargo fetches
-Cybercore and cyberwatch from pinned upstream Git revisions so this release
-uses their shared theme-catalog and unit-discovery APIs.
+Then open <http://127.0.0.1:8767/>. Needs Rust and systemd. Cargo fetches the
+Cybercore 0.8 theme engine from crates.io and cyberwatch from its pinned Git
+revision for unit discovery.
 
 The theme picker reads the shared Cybercore catalog, including custom themes
 saved by [Cybercore Theme Studio](https://github.com/cybercore-tech/cybercore/tree/main/theme-studio).
@@ -41,8 +41,9 @@ shared through `POST /api/cybergrid/active/:id`; these write requests use the
 same per-run token as DaemonHall's other state changes. The picker groups
 built-in and custom themes from catalog metadata instead of browser-local
 palette copies.
-Open DaemonHall pages refresh the shared selection and appearance while
-visible, and reload the picker when the catalog gains or loses themes.
+`GET /api/cybergrid/events` streams catalog change events. Open pages refresh
+the selection immediately and reload the picker when themes are added or
+removed.
 
 ## Security model
 

@@ -179,7 +179,8 @@ async function setupTheme() {
       }
     } catch (error) { console.debug("Shared theme refresh deferred", error); }
   };
-  setInterval(syncSharedTheme, 2000);
+  const themeEvents = new EventSource("/api/cybergrid/events");
+  themeEvents.addEventListener("theme-change", syncSharedTheme);
   document.addEventListener("visibilitychange", syncSharedTheme);
 }
 
