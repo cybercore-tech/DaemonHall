@@ -41,6 +41,8 @@ shared through `POST /api/cybergrid/active/:id`; these write requests use the
 same per-run token as DaemonHall's other state changes. The picker groups
 built-in and custom themes from catalog metadata instead of browser-local
 palette copies.
+Open DaemonHall pages refresh the shared selection and appearance while
+visible, and reload the picker when the catalog gains or loses themes.
 
 ## Security model
 

@@ -161,6 +161,26 @@ async function setupTheme() {
     })),
   ]));
   await applyTheme(catalog.active);
+  let lastCatalog = themeCatalog.map((theme) => theme.id).join("\0");
+  let lastActive = catalog.active;
+  let lastAppearance = catalog.appearance;
+  const syncSharedTheme = async () => {
+    if (document.hidden) return;
+    try {
+      const current = await api("GET", "/api/cybergrid/themes");
+      const ids = current.themes.map((theme) => theme.id).join("\0");
+      if (ids !== lastCatalog) { location.reload(); return; }
+      if (current.active !== lastActive || current.appearance !== lastAppearance) {
+        lastActive = current.active;
+        lastAppearance = current.appearance;
+        themeAppearance = current.appearance;
+        themeCatalog = current.themes;
+        await applyTheme(current.active);
+      }
+    } catch (error) { console.debug("Shared theme refresh deferred", error); }
+  };
+  setInterval(syncSharedTheme, 2000);
+  document.addEventListener("visibilitychange", syncSharedTheme);
 }
 
 // ── modal ──────────────────────────────────────────────────────────────
